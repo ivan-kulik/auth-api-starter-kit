@@ -23,3 +23,27 @@ spring:
   sql:
     init:
       mode: never
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    protocol: smtp
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+app:
+  email-verification:
+    base-url: ${APP_EMAIL_VERIFICATION_BASE_URL}
+    token-expiration-hours: ${APP_EMAIL_VERIFICATION_TOKEN_EXPIRATION_HOURS}
+    subject: ${APP_EMAIL_VERIFICATION_SUBJECT}
+    cleanup-cron: ${APP_EMAIL_VERIFICATION_CLEANUP_CRON}
