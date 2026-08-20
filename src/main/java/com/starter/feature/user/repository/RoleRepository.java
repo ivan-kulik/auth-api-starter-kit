@@ -1,6 +1,6 @@
 package com.starter.feature.user.repository;
 
-import com.starter.feature.user.RoleName;
+import com.starter.feature.user.model.RoleName;
 import com.starter.feature.user.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 

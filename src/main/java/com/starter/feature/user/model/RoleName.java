@@ -1,4 +1,4 @@
-package com.starter.feature.user;
+package com.starter.feature.user.model;
 
 public enum RoleName {
 

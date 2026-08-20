@@ -1,6 +1,6 @@
 package com.starter.feature.user.entity;
 
-import com.starter.feature.user.RoleName;
+import com.starter.feature.user.model.RoleName;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

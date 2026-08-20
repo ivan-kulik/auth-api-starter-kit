@@ -2,7 +2,7 @@ package com.starter.feature.auth.service;
 
 import com.starter.feature.auth.dto.RegisterRequest;
 import com.starter.feature.auth.event.UserRegisteredEvent;
-import com.starter.feature.user.RoleName;
+import com.starter.feature.user.model.RoleName;
 import com.starter.feature.user.entity.Role;
 import com.starter.feature.user.entity.User;
 import com.starter.feature.user.repository.RoleRepository;
