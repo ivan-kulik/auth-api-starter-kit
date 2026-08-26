@@ -1,4 +1,4 @@
-package com.starter.feature.auth.token;
+package com.starter.feature.auth.service;
 
 import org.springframework.stereotype.Component;
 
@@ -6,13 +6,12 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 @Component
-public class SecureTokenGenerator implements TokenGenerator {
+public class VerificationTokenGenerator {
 
     private static final int TOKEN_BYTES = 32;
 
     private final SecureRandom secureRandom = new SecureRandom();
 
-    @Override
     public String generate() {
         byte[] bytes = new byte[TOKEN_BYTES];
         this.secureRandom.nextBytes(bytes);

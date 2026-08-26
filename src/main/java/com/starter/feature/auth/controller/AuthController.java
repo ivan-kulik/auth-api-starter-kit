@@ -1,26 +1,38 @@
 package com.starter.feature.auth.controller;
 
+import com.starter.feature.auth.dto.RegisterRequest;
+import com.starter.feature.auth.dto.ResendEmailRequest;
 import com.starter.feature.auth.service.EmailVerificationService;
-import jakarta.validation.constraints.Email;
+import com.starter.feature.auth.service.UserRegistrationService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Validated
 @RestController
-@RequestMapping("/api/v1/auth/verification")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-public class VerificationController {
+public class AuthController {
 
+    private final UserRegistrationService registrationService;
     private final EmailVerificationService emailVerificationService;
 
-    @GetMapping("/verify-email")
+    @PostMapping("/register")
+    public ResponseEntity<Void> register(
+            @Valid @RequestBody RegisterRequest request
+    ) {
+        this.registrationService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/verify")
     public ResponseEntity<Void> confirmEmail(
             @RequestParam("token") @NotBlank String tokenValue
     ) {
@@ -30,9 +42,9 @@ public class VerificationController {
 
     @PostMapping("/resend-verification")
     public ResponseEntity<Void> resendVerification(
-            @RequestParam("email") @Email String email
+            @Valid @RequestBody ResendEmailRequest request
     ) {
-        this.emailVerificationService.resendVerificationEmail(email);
+        this.emailVerificationService.resendVerificationEmail(request);
         return ResponseEntity.accepted().build();
     }
 }

@@ -7,7 +7,7 @@ import com.starter.feature.user.entity.Role;
 import com.starter.feature.user.entity.User;
 import com.starter.feature.user.repository.RoleRepository;
 import com.starter.feature.user.repository.UserRepository;
-import com.starter.shared.exception.BusinessRuleViolationException;
+import com.starter.common.exception.BusinessRuleViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;

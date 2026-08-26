@@ -1,9 +1,10 @@
 package com.starter.feature.auth.service;
 
-import com.starter.feature.auth.email.VerificationEmailNotifier;
+import com.starter.feature.auth.dto.ResendEmailRequest;
+import com.starter.feature.auth.event.UserRegisteredEventListener;
 import com.starter.feature.user.entity.User;
 import com.starter.feature.user.repository.UserRepository;
-import com.starter.shared.exception.BadRequestException;
+import com.starter.common.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +15,7 @@ public class EmailVerificationService {
 
     private final VerificationTokenService tokenService;
     private final UserRepository userRepository;
-    private final VerificationEmailNotifier emailNotifier;
+    private final UserRegisteredEventListener emailNotifier;
 
     @Transactional
     public void confirmEmail(String tokenValue) {
@@ -29,8 +30,8 @@ public class EmailVerificationService {
         this.userRepository.save(user);
     }
 
-    public void resendVerificationEmail(String email) {
-        this.userRepository.findByEmail(email)
+    public void resendVerificationEmail(ResendEmailRequest request) {
+        this.userRepository.findByEmail(request.email())
                 .filter(user -> !user.isEmailVerified())
                 .ifPresent(this.emailNotifier::sendVerificationEmail);
     }

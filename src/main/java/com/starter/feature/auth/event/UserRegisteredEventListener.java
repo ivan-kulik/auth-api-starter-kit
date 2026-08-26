@@ -1,7 +1,7 @@
-package com.starter.feature.auth.email;
+package com.starter.feature.auth.event;
 
+import com.starter.common.email.EmailSender;
 import com.starter.feature.auth.config.EmailVerificationProperties;
-import com.starter.feature.auth.event.UserRegisteredEvent;
 import com.starter.feature.auth.service.VerificationTokenService;
 import com.starter.feature.user.entity.User;
 import com.starter.feature.user.repository.UserRepository;
@@ -18,7 +18,7 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class VerificationEmailNotifier {
+public class UserRegisteredEventListener {
 
     private final VerificationTokenService tokenService;
     private final EmailSender emailSender;

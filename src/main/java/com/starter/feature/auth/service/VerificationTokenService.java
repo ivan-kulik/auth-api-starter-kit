@@ -3,10 +3,9 @@ package com.starter.feature.auth.service;
 import com.starter.feature.auth.config.EmailVerificationProperties;
 import com.starter.feature.auth.entity.VerificationToken;
 import com.starter.feature.auth.repository.VerificationTokenRepository;
-import com.starter.feature.auth.token.SecureTokenGenerator;
 import com.starter.feature.user.entity.User;
-import com.starter.shared.exception.BadRequestException;
-import com.starter.shared.util.HashUtil;
+import com.starter.common.exception.BadRequestException;
+import com.starter.common.util.HashUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ import java.time.Instant;
 public class VerificationTokenService {
 
     private final VerificationTokenRepository tokenRepository;
-    private final SecureTokenGenerator tokenGenerator;
+    private final VerificationTokenGenerator tokenGenerator;
     private final EmailVerificationProperties properties;
     private final Clock clock;
 

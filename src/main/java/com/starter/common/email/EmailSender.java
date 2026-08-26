@@ -1,4 +1,4 @@
-package com.starter.feature.auth.email;
+package com.starter.common.email;
 
 public interface EmailSender {
 

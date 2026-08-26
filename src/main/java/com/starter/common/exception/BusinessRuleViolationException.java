@@ -1,4 +1,4 @@
-package com.starter.shared.exception;
+package com.starter.common.exception;
 
 public class BusinessRuleViolationException extends RuntimeException {
     public BusinessRuleViolationException(String message) {
