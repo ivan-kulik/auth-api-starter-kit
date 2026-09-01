@@ -47,3 +47,8 @@ app:
     token-expiration-hours: 24
     subject: Confirm your email.
     cleanup-cron: 0 0 3 * * ?
+
+  jwt:
+    secret: beccd90a1da85fb4b5250c83da4f5b97566cd50cf23f37f6110fcee6918ccfff
+    access-token-ttl: 15
+    refresh-token-ttl: 7
