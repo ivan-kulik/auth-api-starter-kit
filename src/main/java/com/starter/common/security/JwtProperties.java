@@ -11,7 +11,8 @@ import java.time.temporal.ChronoUnit;
 @Validated
 @ConfigurationProperties(prefix = "app.jwt")
 public record JwtProperties(
-        @NotBlank String secret,
+        @NotBlank String accessTokenSecret,
+        @NotBlank String refreshTokenSecret,
         @DurationUnit(ChronoUnit.MINUTES) Duration accessTokenTtl,
         @DurationUnit(ChronoUnit.DAYS) Duration refreshTokenTtl
 ) {

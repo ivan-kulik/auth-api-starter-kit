@@ -49,6 +49,7 @@ app:
     cleanup-cron: ${APP_EMAIL_VERIFICATION_CLEANUP_CRON}
 
   jwt:
-    secret: ${APP_JWT_SECRET}
+    access-token-secret: ${APP_JWT_ACCESS_TOKEN_SECRET}
+    refresh-token-secret: ${APP_JWT_REFRESH_TOKEN_SECRET}
     access-token-ttl: ${APP_JWT_ACCESS_TOKEN_TTL}
     refresh-token-ttl: ${APP_JWT_REFRESH_TOKEN_TTL}
