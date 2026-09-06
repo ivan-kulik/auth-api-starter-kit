@@ -1,8 +1,7 @@
 package com.starter.common.security;
 
-import com.starter.feature.user.entity.User;
-import com.starter.feature.user.repository.UserRepository;
-import jakarta.annotation.Nonnull;
+import com.starter.feature.auth.service.UserIdentifierResolver;
+import com.starter.feature.auth.service.UserLookupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,15 +13,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UserIdentifierResolver userIdentifierResolver;
+    private final UserLookupService userLookupService;
 
     @Override
     @Transactional(readOnly = true)
-    @Nonnull
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found: " + email));
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+        var identifier = this.userIdentifierResolver.resolve(login);
+        var user = this.userLookupService.find(identifier);
+
         return new CustomUserDetails(user);
     }
 }
