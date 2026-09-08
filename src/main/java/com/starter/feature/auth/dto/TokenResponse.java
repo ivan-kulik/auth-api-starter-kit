@@ -6,4 +6,5 @@ public record TokenResponse(
         String tokenType,
         Long expiresInSeconds
 ) {
+    public static final String TOKEN_TYPE = "Bearer";
 }
