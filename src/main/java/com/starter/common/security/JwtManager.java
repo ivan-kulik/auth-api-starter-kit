@@ -4,16 +4,15 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +22,7 @@ public class JwtManager {
 
     public String generateAccessToken(Long userId, String email, List<String> roles) {
         Instant now = Instant.now();
-        Instant expiration = now.plus(jwtProperties.accessTokenTtl());
+        Instant expiration = now.plus(this.jwtProperties.accessTokenTtl());
         return Jwts.builder()
                 .subject(email)
                 .claim("uid", userId.toString())
@@ -37,7 +36,7 @@ public class JwtManager {
 
     public String generateRefreshToken(Long userId, String email) {
         Instant now = Instant.now();
-        Instant expiration = now.plus(jwtProperties.refreshTokenTtl());
+        Instant expiration = now.plus(this.jwtProperties.refreshTokenTtl());
         return Jwts.builder()
                 .subject(email)
                 .claim("uid", userId.toString())
@@ -64,39 +63,30 @@ public class JwtManager {
                 .getPayload();
     }
 
-    public UUID extractUserId(Claims claims) {
-        return UUID.fromString(claims.get("uid", String.class));
+    public Long extractUserId(Claims claims) {
+        String userId = claims.get("uid", String.class);
+
+        try {
+            return Long.valueOf(userId);
+        } catch (NumberFormatException exception) {
+            throw new BadCredentialsException("Invalid refresh token");
+        }
     }
 
     public String extractEmail(Claims claims) {
         return claims.getSubject();
     }
 
-    public List<String> extractRoles(Claims claims) {
-        Object rolesObj  = claims.get("roles", List.class);
-        if (!(rolesObj instanceof List<?> rawList)) {
-            return Collections.emptyList();
-        }
-        return rawList.stream()
-                .filter(String.class::isInstance)
-                .map(String.class::cast)
-                .collect(Collectors.toList());
-    }
-
-    public String extractTokenId(Claims claims) {
-        return claims.getId();
-    }
-
     private SecretKey getAccessKey() {
         return Keys.hmacShaKeyFor(
-                jwtProperties.accessTokenSecret()
+                this.jwtProperties.accessTokenSecret()
                         .getBytes(StandardCharsets.UTF_8)
         );
     }
 
     private SecretKey getRefreshKey() {
         return Keys.hmacShaKeyFor(
-                jwtProperties.refreshTokenSecret()
+                this.jwtProperties.refreshTokenSecret()
                         .getBytes(StandardCharsets.UTF_8)
         );
     }
