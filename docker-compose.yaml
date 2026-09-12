@@ -35,6 +35,7 @@ services:
       APP_JWT_REFRESH_TOKEN_SECRET: ${JWT_REFRESH_TOKEN_SECRET}
       APP_JWT_ACCESS_TOKEN_TTL: ${JWT_ACCESSS_TOKEN_TTL}
       APP_JWT_REFRESH_TOKEN_TTL: ${JWT_REFRESH_TOKEN_TTL}
+      APP_CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
     depends_on:
       postgres:
         condition: service_healthy
