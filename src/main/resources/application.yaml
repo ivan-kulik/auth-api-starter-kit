@@ -53,3 +53,7 @@ app:
     refresh-token-secret: ${APP_JWT_REFRESH_TOKEN_SECRET}
     access-token-ttl: ${APP_JWT_ACCESS_TOKEN_TTL}
     refresh-token-ttl: ${APP_JWT_REFRESH_TOKEN_TTL}
+
+  cors:
+    allowed-origins:
+      - http://localhost:5500
