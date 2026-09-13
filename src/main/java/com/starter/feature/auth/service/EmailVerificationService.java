@@ -50,7 +50,7 @@ public class EmailVerificationService {
     }
 
     public void resendVerificationEmail(ResendEmailRequest request) {
-        this.userRepository.findByEmail(request.email())
+        this.userRepository.findWithRolesByEmail(request.email())
                 .filter(user -> !user.isEmailVerified())
                 .ifPresent(this::sendVerificationEmail);
     }
