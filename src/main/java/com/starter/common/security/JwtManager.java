@@ -3,7 +3,6 @@ package com.starter.common.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 
@@ -11,83 +10,119 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Component
-@RequiredArgsConstructor
 public class JwtManager {
+
+    private static final String CLAIM_USER_ID = "uid";
+    private static final String CLAIM_TOKEN_TYPE = "token_type";
+
+    private static final String TOKEN_TYPE_ACCESS = "access";
+    private static final String TOKEN_TYPE_REFRESH = "refresh";
 
     private final JwtProperties jwtProperties;
 
-    public String generateAccessToken(Long userId, String email, List<String> roles) {
+    private final SecretKey accessKey;
+    private final SecretKey refreshKey;
+
+    public JwtManager(JwtProperties jwtProperties) {
+        this.jwtProperties = jwtProperties;
+
+        this.accessKey = Keys.hmacShaKeyFor(
+                jwtProperties.accessTokenSecret()
+                        .getBytes(StandardCharsets.UTF_8)
+        );
+
+        this.refreshKey = Keys.hmacShaKeyFor(
+                jwtProperties.refreshTokenSecret()
+                        .getBytes(StandardCharsets.UTF_8)
+        );
+    }
+
+    public String generateAccessToken(Long userId, String email) {
         Instant now = Instant.now();
         Instant expiration = now.plus(this.jwtProperties.accessTokenTtl());
+
         return Jwts.builder()
                 .subject(email)
-                .claim("uid", userId.toString())
-                .claim("roles", roles)
+                .claim(CLAIM_USER_ID, userId)
+                .claim(CLAIM_TOKEN_TYPE, TOKEN_TYPE_ACCESS)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expiration))
                 .id(UUID.randomUUID().toString())
-                .signWith(getAccessKey())
+                .signWith(this.accessKey)
                 .compact();
     }
 
     public String generateRefreshToken(Long userId, String email) {
         Instant now = Instant.now();
         Instant expiration = now.plus(this.jwtProperties.refreshTokenTtl());
+
         return Jwts.builder()
                 .subject(email)
-                .claim("uid", userId.toString())
+                .claim(CLAIM_USER_ID, userId)
+                .claim(CLAIM_TOKEN_TYPE, TOKEN_TYPE_REFRESH)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expiration))
                 .id(UUID.randomUUID().toString())
-                .signWith(getRefreshKey())
+                .signWith(this.refreshKey)
                 .compact();
     }
 
     public Claims parseAccessToken(String token) {
-        return Jwts.parser()
-                .verifyWith(getAccessKey())
+        Claims claims = Jwts.parser()
+                .verifyWith(this.accessKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+
+        validateTokenType(claims, TOKEN_TYPE_ACCESS);
+
+        return claims;
     }
 
     public Claims parseRefreshToken(String token) {
-        return Jwts.parser()
-                .verifyWith(getRefreshKey())
+        Claims claims = Jwts.parser()
+                .verifyWith(this.refreshKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+
+        validateTokenType(claims, TOKEN_TYPE_REFRESH);
+
+        return claims;
     }
 
     public Long extractUserId(Claims claims) {
-        String userId = claims.get("uid", String.class);
+        Object value = claims.get(CLAIM_USER_ID);
+
+        if (value == null) {
+            throw new BadCredentialsException("Invalid token");
+        }
 
         try {
-            return Long.valueOf(userId);
+            return Long.valueOf(value.toString());
         } catch (NumberFormatException exception) {
-            throw new BadCredentialsException("Invalid refresh token");
+            throw new BadCredentialsException("Invalid token");
         }
     }
 
     public String extractEmail(Claims claims) {
-        return claims.getSubject();
+        String subject = claims.getSubject();
+
+        if (subject == null || subject.isBlank()) {
+            throw new BadCredentialsException("Invalid token");
+        }
+
+        return subject;
     }
 
-    private SecretKey getAccessKey() {
-        return Keys.hmacShaKeyFor(
-                this.jwtProperties.accessTokenSecret()
-                        .getBytes(StandardCharsets.UTF_8)
-        );
-    }
+    private void validateTokenType(Claims claims, String expectedType) {
+        String actualType = claims.get(CLAIM_TOKEN_TYPE, String.class);
 
-    private SecretKey getRefreshKey() {
-        return Keys.hmacShaKeyFor(
-                this.jwtProperties.refreshTokenSecret()
-                        .getBytes(StandardCharsets.UTF_8)
-        );
+        if (!expectedType.equals(actualType)) {
+            throw new BadCredentialsException("Invalid token");
+        }
     }
 }
