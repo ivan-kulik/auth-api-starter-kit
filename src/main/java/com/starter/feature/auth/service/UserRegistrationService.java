@@ -47,13 +47,13 @@ public class UserRegistrationService {
 
     private void ensureUsernameIsFree(String username) {
         if (this.userRepository.existsByUsername(username)) {
-            throw new BusinessRuleViolationException("Username already taken: " + username);
+            throw new BusinessRuleViolationException("Username already taken");
         }
     }
 
     private void ensureEmailIsFree(String email) {
         if (this.userRepository.existsByEmail(email)) {
-            throw new BusinessRuleViolationException("Email already registered: " + email);
+            throw new BusinessRuleViolationException("Email already registered");
         }
     }
 
