@@ -42,6 +42,9 @@ public class RefreshToken {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    @Column(name = "created_at", nullable = false)
+    private Instant createdAt;
+
     @Column(name = "expiry_date", nullable = false)
     private Instant expiryDate;
 
