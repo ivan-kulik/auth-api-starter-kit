@@ -17,9 +17,11 @@ public class UserLookupService {
     @Transactional(readOnly = true)
     public User find(UserIdentifier identifier) {
         return switch (identifier.type()) {
-            case USERNAME -> this.userRepository.findByUsername(identifier.value())
+            case USERNAME -> this.userRepository
+                    .findWithRolesByUsername(identifier.value())
                     .orElseThrow(this::userNotFound);
-            case EMAIL -> this.userRepository.findByEmail(identifier.value())
+            case EMAIL -> this.userRepository
+                    .findWithRolesByEmail(identifier.value())
                     .orElseThrow(this::userNotFound);
         };
     }
