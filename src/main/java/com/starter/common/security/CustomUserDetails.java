@@ -2,7 +2,6 @@ package com.starter.common.security;
 
 import com.starter.feature.user.entity.Role;
 import com.starter.feature.user.entity.User;
-import jakarta.annotation.Nonnull;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -29,11 +28,10 @@ public class CustomUserDetails implements UserDetails {
         this.password = user.getPasswordHash();
         this.roles = user.getRoles();
         this.emailVerified = user.isEmailVerified();
-        this.enabled = user.isEmailVerified();
+        this.enabled = user.isEnabled();
     }
 
     @Override
-    @Nonnull
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().toString()))
