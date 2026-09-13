@@ -10,7 +10,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.stream.Collectors;
 
 @Slf4j
-@RestControllerAdvice(basePackages = "com.starter.feature.auth.controller")
+@RestControllerAdvice(
+        basePackages = {
+                "com.starter.feature.auth.controller",
+                "com.starter.feature.user.controller"
+        }
+)
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessRuleViolationException.class)
