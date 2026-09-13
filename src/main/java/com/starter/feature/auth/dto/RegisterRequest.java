@@ -12,7 +12,7 @@ public record RegisterRequest(
         @NotBlank @Email @Size(max = 120)
         String email,
 
-        @NotBlank @Size(min = 8)
+        @NotBlank @Size(min = 8, max = 50)
         @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$",
                 message = "Password must contain uppercase, lowercase, digit and special char")
         String password
