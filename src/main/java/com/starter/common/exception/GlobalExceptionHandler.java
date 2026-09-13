@@ -10,12 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.stream.Collectors;
 
 @Slf4j
-@RestControllerAdvice(
-        basePackages = {
-                "com.starter.feature.auth.controller",
-                "com.starter.feature.user.controller"
-        }
-)
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessRuleViolationException.class)
@@ -27,6 +22,18 @@ public class GlobalExceptionHandler {
                 .body(ApiErrorResponse.of(
                         HttpStatus.CONFLICT, e.getMessage())
                 );
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleNotFound(
+            ResourceNotFoundException e
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ApiErrorResponse.of(
+                        HttpStatus.NOT_FOUND,
+                        e.getMessage()
+                ));
     }
 
     @ExceptionHandler(BadRequestException.class)

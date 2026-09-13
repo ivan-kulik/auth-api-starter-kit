@@ -1,6 +1,6 @@
 package com.starter.feature.user.service;
 
-import com.starter.common.exception.BadRequestException;
+import com.starter.common.exception.ResourceNotFoundException;
 import com.starter.feature.user.dto.CurrentUserResponse;
 import com.starter.feature.user.entity.User;
 import com.starter.feature.user.mapper.UserMapper;
@@ -18,7 +18,7 @@ public class UserService {
     public CurrentUserResponse getCurrentUser(Long userId) {
         User user = this.userRepository.findById(userId)
                 .orElseThrow(() ->
-                        new BadRequestException("User not found")
+                        new ResourceNotFoundException("User not found")
                 );
 
         return this.userMapper.toResponse(user);
