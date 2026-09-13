@@ -21,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.Instant;
 
 @Service
@@ -32,6 +33,7 @@ public class AuthService {
     private final JwtProperties jwtProperties;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
+    private final Clock clock;
 
     @Transactional
     public TokenResponse login(LoginRequest request) {
@@ -58,8 +60,8 @@ public class AuthService {
 
         Long userId = this.jwtManager.extractUserId(claims);
 
-        RefreshToken storedToken = findValidRefreshToken(refreshToken);
-        validateTokenOwnership(storedToken, userId);
+        RefreshToken storedToken = findValidRefreshToken(
+                refreshToken, userId);
 
         User user = findUser(userId);
 
@@ -105,7 +107,7 @@ public class AuthService {
         RefreshToken refreshTokenEntity = RefreshToken.builder()
                 .tokenHash(HashUtil.sha256(refreshToken))
                 .userId(principal.getId())
-                .expiryDate(Instant.now()
+                .expiryDate(Instant.now(this.clock)
                         .plus(this.jwtProperties.refreshTokenTtl())
                 )
                 .revoked(false)
@@ -121,27 +123,22 @@ public class AuthService {
         }
     }
 
-    private RefreshToken findValidRefreshToken(String refreshToken) {
+    private RefreshToken findValidRefreshToken(String refreshToken, Long userId) {
         String tokenHash = HashUtil.sha256(refreshToken);
 
-        RefreshToken storedToken = this.refreshTokenRepository.findByTokenHash(tokenHash)
+        RefreshToken storedToken = this.refreshTokenRepository
+                .findByTokenHashAndUserId(tokenHash, userId)
                 .orElseThrow(() ->
                         new BadCredentialsException("Invalid refresh token")
                 );
 
         if (storedToken.isRevoked() ||
-                !storedToken.getExpiryDate().isAfter(Instant.now())
+                !storedToken.getExpiryDate().isAfter(Instant.now(this.clock))
         ) {
             throw new BadCredentialsException("Invalid refresh token");
         }
 
         return storedToken;
-    }
-
-    private void validateTokenOwnership(RefreshToken refreshToken, Long userId) {
-        if (!refreshToken.getUserId().equals(userId)) {
-            throw new BadCredentialsException("Invalid refresh token");
-        }
     }
 
     private User findUser(Long userId) {

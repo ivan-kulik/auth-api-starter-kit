@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<RefreshToken> findByTokenHash(String tokenHash);
+    Optional<RefreshToken> findByTokenHashAndUserId(String tokenHash, Long userId);
 
     void deleteByUserId(Long userId);
 }
