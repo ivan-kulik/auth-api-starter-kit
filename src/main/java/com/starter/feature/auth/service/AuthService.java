@@ -14,6 +14,7 @@ import com.starter.feature.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -74,6 +75,14 @@ public class AuthService {
     @Transactional
     public void logout(Long userId) {
         this.refreshTokenRepository.deleteByUserId(userId);
+    }
+
+    @Scheduled(cron = "${app.refresh-token.cleanup-cron:0 0 4 * * ?}")
+    @Transactional
+    public void cleanupRefreshTokens() {
+        this.refreshTokenRepository.deleteExpiredOrRevoked(
+                Instant.now(this.clock)
+        );
     }
 
     private TokenResponse generateTokenPair(CustomUserDetails principal) {
