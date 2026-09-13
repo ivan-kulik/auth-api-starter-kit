@@ -26,20 +26,23 @@ public class VerificationTokenService {
 
     @Transactional
     public String issueToken(User user) {
-        this.tokenRepository.findByUser(user)
-                .ifPresent(this.tokenRepository::delete);
-
         String tokenValue = this.tokenGenerator.generate();
+        String tokenHash = HashUtil.sha256(tokenValue);
 
-        VerificationToken token = VerificationToken.builder()
-                .tokenHash(HashUtil.sha256(tokenValue))
-                .user(user)
-                .expiryDate(Instant.now(this.clock)
-                                .plus(this.properties.tokenExpirationHours()))
-                .createdAt(Instant.now(this.clock))
-                .build();
+        Instant now = Instant.now(this.clock);
+        Instant expiryDate = now.plus(this.properties.tokenExpirationHours());
+
+        VerificationToken token = this.tokenRepository.findByUser(user)
+                .orElseGet(() -> VerificationToken.builder()
+                        .user(user)
+                        .build());
+
+        token.setTokenHash(tokenHash);
+        token.setExpiryDate(expiryDate);
+        token.setCreatedAt(now);
 
         this.tokenRepository.save(token);
+
         return tokenValue;
     }
 
@@ -51,12 +54,14 @@ public class VerificationTokenService {
                         "Invalid verification link. It may have already been used or does not exist.")
                 );
 
-        if (token.getExpiryDate().isBefore(Instant.now(this.clock))) {
+        Instant now = Instant.now(this.clock);
+        if (token.getExpiryDate().isBefore(now)) {
             throw new BadRequestException(
                     "Verification link has expired. Please request a new one.");
         }
 
         User user = token.getUser();
+
         this.tokenRepository.delete(token);
 
         return user;
