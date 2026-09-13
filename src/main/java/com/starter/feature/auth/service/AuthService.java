@@ -104,12 +104,14 @@ public class AuthService {
     }
 
     private void saveRefreshTokenToDatabase(CustomUserDetails principal, String refreshToken) {
+        Instant now = Instant.now(this.clock);
+        Instant expiryDate = now.plus(this.jwtProperties.refreshTokenTtl());
+
         RefreshToken refreshTokenEntity = RefreshToken.builder()
                 .tokenHash(HashUtil.sha256(refreshToken))
                 .userId(principal.getId())
-                .expiryDate(Instant.now(this.clock)
-                        .plus(this.jwtProperties.refreshTokenTtl())
-                )
+                .createdAt(now)
+                .expiryDate(expiryDate)
                 .revoked(false)
                 .build();
         this.refreshTokenRepository.save(refreshTokenEntity);

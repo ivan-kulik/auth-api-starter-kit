@@ -1,0 +1,3 @@
+ALTER TABLE refresh_tokens
+    ADD COLUMN created_at TIMESTAMPTZ NOT NULL
+        DEFAULT CURRENT_TIMESTAMP;
