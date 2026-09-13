@@ -24,7 +24,7 @@ public class EmailVerificationService {
     private final EmailVerificationProperties properties;
     private final SpringTemplateEngine templateEngine;
 
-    @Async
+    @Async("emailTaskExecutor")
     public void sendVerificationEmail(User user) {
         String tokenValue = this.tokenService.issueToken(user);
         String link = buildVerificationLink(tokenValue);
