@@ -3,6 +3,7 @@ package com.starter.common.security;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
@@ -17,10 +18,11 @@ import java.time.Instant;
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class SecurityExceptionHandler implements AuthenticationEntryPoint,
         AccessDeniedHandler {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     @Override
     public void commence(
