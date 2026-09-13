@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.time.Clock;
 import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
@@ -22,12 +23,14 @@ public class JwtManager {
     private static final String TOKEN_TYPE_REFRESH = "refresh";
 
     private final JwtProperties jwtProperties;
+    private final Clock clock;
 
     private final SecretKey accessKey;
     private final SecretKey refreshKey;
 
-    public JwtManager(JwtProperties jwtProperties) {
+    public JwtManager(JwtProperties jwtProperties, Clock clock) {
         this.jwtProperties = jwtProperties;
+        this.clock = clock;
 
         this.accessKey = Keys.hmacShaKeyFor(
                 jwtProperties.accessTokenSecret()
@@ -41,7 +44,7 @@ public class JwtManager {
     }
 
     public String generateAccessToken(Long userId, String email) {
-        Instant now = Instant.now();
+        Instant now = Instant.now(this.clock);
         Instant expiration = now.plus(this.jwtProperties.accessTokenTtl());
 
         return Jwts.builder()
@@ -56,7 +59,7 @@ public class JwtManager {
     }
 
     public String generateRefreshToken(Long userId, String email) {
-        Instant now = Instant.now();
+        Instant now = Instant.now(this.clock);
         Instant expiration = now.plus(this.jwtProperties.refreshTokenTtl());
 
         return Jwts.builder()
