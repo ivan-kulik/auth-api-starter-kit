@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: auth-api-starter-kit
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0
+    clean-disabled: true
+
+  sql:
+    init:
+      mode: never
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: your_email
+    password: your_password
+    protocol: smtp
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+app:
+  email-verification:
+    base-url: http://localhost:5173
+    token-expiration-hours: 24
+    subject: Confirm your email.
+    cleanup-cron: 0 0 3 * * ?
+
+  jwt:
+    access-token-secret: beccd90a1da85fb4b5250c83da4f5b97566cd50cf23f37f6110fcee6918ccfff
+    refresh-token-secret: a1fe436fe70b94ec556f9fc05bdc4e53d57e8b11f6f6897374300bdbabde2e17
+    access-token-ttl: 15
+    refresh-token-ttl: 7
+
+  cors:
+    allowed-origins:
+      - http://localhost:5173

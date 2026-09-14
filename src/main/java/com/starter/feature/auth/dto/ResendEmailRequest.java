@@ -1,0 +1,11 @@
+package com.starter.feature.auth.dto;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public record ResendEmailRequest(
+        @NotBlank @Email @Size(max = 120)
+        String email
+) {
+}
